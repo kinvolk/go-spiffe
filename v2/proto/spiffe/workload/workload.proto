@@ -1,10 +1,17 @@
 syntax = "proto3";
+option go_package = "github.com/spiffe/go-spiffe/v2/proto/spiffe/workload";
 
 import "google/protobuf/struct.proto";
 
 message X509SVIDRequest {
-    // Workload PID. If 0 current workload is attestated.
-    int32 pid = 1;
+    // Credentials of the workload to attestate.
+    // If not set the caller is attestated.
+    oneof credentials {
+        // Pid of the process to attest
+        int32 pid = 1;
+        // Uuid of the Kubernetes pod to attest
+        string pod_uuid = 2;
+    }
 }
 
 // The X509SVIDResponse message carries a set of X.509 SVIDs and their
