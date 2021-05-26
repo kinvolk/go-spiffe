@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/spiffe/go-spiffe/v2/spiffeid"
 	"github.com/spiffe/go-spiffe/v2/spiffetls/tlsconfig"
@@ -12,10 +13,11 @@ import (
 )
 
 // Worload API socket path
-const socketPath = "unix:///tmp/agent.sock"
+//const socketPath = "unix:///tmp/spire-agent/public/api.sock"
+const socketPath = "unix:///run/spire/sockets/agent.sock"
 
 func main() {
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	// Set up a `/` resource handler
@@ -33,10 +35,11 @@ func main() {
 	defer source.Close()
 
 	// Allowed SPIFFE ID
-	clientID := spiffeid.Must("example.org", "client")
+	clientID := spiffeid.Must("example.org", "ns/default/sa/default")
 
 	// Create a `tls.Config` to allow mTLS connections, and verify that presented certificate has SPIFFE ID `spiffe://example.org/client`
 	tlsConfig := tlsconfig.MTLSServerConfig(source, source, tlsconfig.AuthorizeID(clientID))
+	//tlsConfig := tlsconfig.TLSServerConfig(source)
 	server := &http.Server{
 		Addr:      ":8443",
 		TLSConfig: tlsConfig,
