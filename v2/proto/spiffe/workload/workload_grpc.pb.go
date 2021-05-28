@@ -11,6 +11,7 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
+// Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
 // SpiffeWorkloadAPIClient is the client API for SpiffeWorkloadAPI service.
@@ -46,7 +47,7 @@ func (c *spiffeWorkloadAPIClient) FetchJWTSVID(ctx context.Context, in *JWTSVIDR
 }
 
 func (c *spiffeWorkloadAPIClient) FetchJWTBundles(ctx context.Context, in *JWTBundlesRequest, opts ...grpc.CallOption) (SpiffeWorkloadAPI_FetchJWTBundlesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_SpiffeWorkloadAPI_serviceDesc.Streams[0], "/SpiffeWorkloadAPI/FetchJWTBundles", opts...)
+	stream, err := c.cc.NewStream(ctx, &SpiffeWorkloadAPI_ServiceDesc.Streams[0], "/SpiffeWorkloadAPI/FetchJWTBundles", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +88,7 @@ func (c *spiffeWorkloadAPIClient) ValidateJWTSVID(ctx context.Context, in *Valid
 }
 
 func (c *spiffeWorkloadAPIClient) FetchX509SVID(ctx context.Context, in *X509SVIDRequest, opts ...grpc.CallOption) (SpiffeWorkloadAPI_FetchX509SVIDClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_SpiffeWorkloadAPI_serviceDesc.Streams[1], "/SpiffeWorkloadAPI/FetchX509SVID", opts...)
+	stream, err := c.cc.NewStream(ctx, &SpiffeWorkloadAPI_ServiceDesc.Streams[1], "/SpiffeWorkloadAPI/FetchX509SVID", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -160,7 +161,7 @@ type UnsafeSpiffeWorkloadAPIServer interface {
 }
 
 func RegisterSpiffeWorkloadAPIServer(s grpc.ServiceRegistrar, srv SpiffeWorkloadAPIServer) {
-	s.RegisterService(&_SpiffeWorkloadAPI_serviceDesc, srv)
+	s.RegisterService(&SpiffeWorkloadAPI_ServiceDesc, srv)
 }
 
 func _SpiffeWorkloadAPI_FetchJWTSVID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -241,7 +242,10 @@ func (x *spiffeWorkloadAPIFetchX509SVIDServer) Send(m *X509SVIDResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-var _SpiffeWorkloadAPI_serviceDesc = grpc.ServiceDesc{
+// SpiffeWorkloadAPI_ServiceDesc is the grpc.ServiceDesc for SpiffeWorkloadAPI service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var SpiffeWorkloadAPI_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "SpiffeWorkloadAPI",
 	HandlerType: (*SpiffeWorkloadAPIServer)(nil),
 	Methods: []grpc.MethodDesc{
@@ -266,5 +270,5 @@ var _SpiffeWorkloadAPI_serviceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "workload.proto",
+	Metadata: "v2/proto/spiffe/workload/workload.proto",
 }

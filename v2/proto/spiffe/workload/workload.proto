@@ -2,7 +2,10 @@ syntax = "proto3";
 
 import "google/protobuf/struct.proto";
 
-message X509SVIDRequest {  }
+message X509SVIDRequest {
+    // TODO: use definition in common.proto from spire?
+    repeated string selectors = 1;
+ }
 
 // The X509SVIDResponse message carries a set of X.509 SVIDs and their
 // associated information. It also carries a set of global CRLs, and a
