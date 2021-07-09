@@ -2,9 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/spiffe/go-spiffe/v2/spiffeid"
 	"github.com/spiffe/go-spiffe/v2/spiffetls/tlsconfig"
@@ -13,12 +16,11 @@ import (
 
 const (
 	// Workload API socket path
-	socketPath = "unix:///tmp/agent.sock"
-	serverURL  = "https://localhost:8443/"
+	socketPath = "unix:///run/spire/sockets/agent.sock"
 )
 
 func main() {
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	// Create a `workloadapi.X509Source`, it will connect to Workload API using provided socket path
@@ -30,7 +32,7 @@ func main() {
 	defer source.Close()
 
 	// Allowed SPIFFE ID
-	serverID := spiffeid.Must("example.org", "server")
+	serverID := spiffeid.Must("example.org", "ns/default/sa/default")
 
 	// Create a `tls.Config` to allow mTLS connections, and verify that presented certificate has SPIFFE ID `spiffe://example.org/server`
 	tlsConfig := tlsconfig.MTLSClientConfig(source, source, tlsconfig.AuthorizeID(serverID))
@@ -40,9 +42,14 @@ func main() {
 		},
 	}
 
-	r, err := client.Get(serverURL)
+	if len(os.Args) != 2 {
+		fmt.Println("pass the server URL as the first command line argument")
+		return
+	}
+
+	r, err := client.Get(os.Args[1])
 	if err != nil {
-		log.Fatalf("Error connecting to %q: %v", serverURL, err)
+		log.Fatalf("Error connecting to %q: %v", os.Args[1], err)
 	}
 
 	defer r.Body.Close()
